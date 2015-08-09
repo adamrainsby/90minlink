@@ -1,3 +1,3 @@
 # 90 min link
 
-Adds an affiliate code to 90 min links
+Chrome extension that adds an affiliate code to 90 min links
