@@ -13,7 +13,8 @@ function getCurrentTabUrl(callback) {
   // https://developer.chrome.com/extensions/tabs#method-query
   var queryInfo = {
     active: true,
-    currentWindow: true
+    currentWindow: true,
+    url: "http://www.90min.com/*"
   };
 
   chrome.tabs.query(queryInfo, function(tabs) {
@@ -27,24 +28,37 @@ function getCurrentTabUrl(callback) {
     // A tab is a plain object that provides information about the tab.
     // See https://developer.chrome.com/extensions/tabs#type-Tab
     var url = tab.url;
+    affiliate_position = url.search('a_aid=')
+    affiliate_position = affiliate_position === -1 ? -1 : affiliate_position - 1;
 
+    if (affiliate_position !== -1) {
+      url = url.substring(0, affiliate_position)
+    }
+    url_with_code = url + '?a_aid=35612';
+    alert(url_with_code)
+
+    copyToClipboard(url_with_code)
     // tab.url is only available if the "activeTab" permission is declared.
     // If you want to see the URL of other tabs (e.g. after removing active:true
     // from |queryInfo|), then the "tabs" permission is required to see their
     // "url" properties.
     console.assert(typeof url == 'string', 'tab.url should be a string');
-
+    return
     callback(url);
-  });
+  }
+);
 
-  // Most methods of the Chrome extension APIs are asynchronous. This means that
-  // you CANNOT do something like this:
-  //
-  // var url;
-  // chrome.tabs.query(queryInfo, function(tabs) {
-  //   url = tabs[0].url;
-  // });
-  // alert(url); // Shows "undefined", because chrome.tabs.query is async.
+  function copyToClipboard(text){
+    var copyDiv = document.createElement('div');
+    copyDiv.contentEditable = true;
+    document.body.appendChild(copyDiv);
+    copyDiv.innerHTML = text;
+    copyDiv.unselectable = "off";
+    copyDiv.focus();
+    document.execCommand('SelectAll');
+    document.execCommand("Copy", false, null);
+    document.body.removeChild(copyDiv);
+  }
 }
 
 /**
